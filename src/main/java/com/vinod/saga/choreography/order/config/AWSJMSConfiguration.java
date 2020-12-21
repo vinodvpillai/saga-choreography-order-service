@@ -12,6 +12,7 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -24,19 +25,22 @@ import javax.jms.Session;
 @EnableJms
 public class AWSJMSConfiguration {
 
-    private String accessKey="accessKey";
-    private String secretKey="secretKey";
+    private Environment environment;
+
+    public AWSJMSConfiguration(Environment environment) {
+        this.environment=environment;
+    }
 
     private AWSCredentials awsCredentials() {
-        return new BasicAWSCredentials(accessKey, secretKey); }
-
-    SQSConnectionFactory sqsConnectionFactory = new SQSConnectionFactory(new ProviderConfiguration().withNumberOfMessagesToPrefetch(10), AmazonSQSClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCredentials())).withRegion(Regions.AP_SOUTH_1).build());
+        return new BasicAWSCredentials(environment.getProperty("ACCESS_KEY"), environment.getProperty("SECRET_KEY"));
+    }
 
     @Bean
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
+        SQSConnectionFactory sqsConnectionFactory = new SQSConnectionFactory(new ProviderConfiguration().withNumberOfMessagesToPrefetch(10), AmazonSQSClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCredentials())).withRegion(Regions.AP_SOUTH_1).build());
         DefaultJmsListenerContainerFactory factory =
                 new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(this.sqsConnectionFactory);
+        factory.setConnectionFactory(sqsConnectionFactory);
         factory.setDestinationResolver(new DynamicDestinationResolver());
         factory.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
         return factory;
@@ -44,7 +48,8 @@ public class AWSJMSConfiguration {
 
     @Bean
     public JmsTemplate jmsTemplate() {
-        return new JmsTemplate(this.sqsConnectionFactory);
+        SQSConnectionFactory sqsConnectionFactory = new SQSConnectionFactory(new ProviderConfiguration().withNumberOfMessagesToPrefetch(10), AmazonSQSClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCredentials())).withRegion(Regions.AP_SOUTH_1).build());
+        return new JmsTemplate(sqsConnectionFactory);
     }
 
     @Bean

@@ -7,19 +7,15 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet  author="vinod"  id="createTable-customer">
-        <createTable schemaName="saga-customer" tableName="customer">
+    <changeSet  author="vinod"  id="saga-choreography-create-table-order">
+        <createTable schemaName="saga-choreography-order" tableName="orders">
             <column  name="id"  type="BIGINT" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_customer_id"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_order_id"/>
             </column>
-            <column  name="first_name"  type="VARCHAR(50)"/>
-            <column  name="last_name"  type="VARCHAR(50)"/>
-            <column  name="email_id"  type="VARCHAR(150)"/>
-            <column  name="password"  type="VARCHAR(255)"/>
-            <column  name="address"  type="VARCHAR(255)"/>
-            <column  name="max_credit_limit"  type="INTEGER"/>
-            <column  name="current_credit_limit"  type="INTEGER"/>
-            <column  name="status"  type="BIT"/>
+            <column  name="amount"  type="decimal(10,2)"/>
+            <column  name="customer_id"  type="BIGINT" />
+            <column  name="inventory_id"  type="BIGINT"/>
+            <column  name="status"  type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
 

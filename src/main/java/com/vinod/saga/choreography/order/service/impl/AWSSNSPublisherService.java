@@ -6,12 +6,12 @@ import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
 import com.vinod.saga.choreography.order.service.IPublisherService;
 import com.vinod.saga.choreography.order.util.GlobalUtility;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@Log4j2
+@Slf4j
 public class AWSSNSPublisherService implements IPublisherService {
 
     @Autowired
@@ -26,10 +26,10 @@ public class AWSSNSPublisherService implements IPublisherService {
             PublishRequest publishRequest=new PublishRequest(topic.getTopicArn(),jsonObject,subject);
             PublishResult publishResult=snsClient.publish(publishRequest);
             String resultMessageId=publishResult.getMessageId();
-            log.trace("Successfully publish message to :{} with subject: {} result message id: {}",topicName, subject, resultMessageId);
+            log.debug("Successfully publish message to :{} with subject: {} result message id: {}",topicName, subject, resultMessageId);
             return resultMessageId;
         } catch (Exception exception) {
-            log.trace("Error occurred while publishing message to :{} with subject: {}",topicName,subject,exception);
+            log.error("Exception occurred while publishing message to :{} with subject: {}",topicName,subject,exception);
         }
         return  null;
     }
